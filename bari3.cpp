@@ -515,7 +515,7 @@ int main()
 
 //     cout<<"\n " << strcmp(token[n],"okasha");
 
-return full_code->c_str();
+// return full_code->c_str();
 
 
 

@@ -44,3 +44,36 @@
 	"tinyxml.h"
 	<windows.h>
 
+1182323424 source:f:\bari3\bari3\tinystr.cpp
+	"tinystr.h"
+
+1182323424 f:\bari3\bari3\tinystr.h
+	<assert.h>
+	<string.h>
+
+1182323424 source:f:\bari3\bari3\tinyxml.cpp
+	<ctype.h>
+	<sstream>
+	<iostream>
+	"tinyxml.h"
+
+1182323424 f:\bari3\bari3\tinyxml.h
+	<ctype.h>
+	<stdio.h>
+	<stdlib.h>
+	<string.h>
+	<assert.h>
+	<string>
+	<iostream>
+	<sstream>
+	"tinystr.h"
+
+1182323424 source:f:\bari3\bari3\tinyxmlerror.cpp
+	"tinyxml.h"
+
+1182323424 source:f:\bari3\bari3\tinyxmlparser.cpp
+	<ctype.h>
+	<stddef.h>
+	"tinyxml.h"
+	<windows.h>
+
