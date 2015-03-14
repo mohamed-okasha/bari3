@@ -1,0 +1,46 @@
+# depslib dependency file v1.0
+1426256674 source:c:\users\vaio\documents\c-free\bari3.cpp
+	<stdio.h>
+	<iostream>
+	<fstream>
+	<list>
+	<vector>
+	<malloc.h>
+	<string.h>
+	<cstring>
+	"tinyxml.h"
+	<windows.h>
+
+1182323424 c:\users\vaio\documents\c-free\tinyxml.h
+	<ctype.h>
+	<stdio.h>
+	<stdlib.h>
+	<string.h>
+	<assert.h>
+	<string>
+	<iostream>
+	<sstream>
+	"tinystr.h"
+
+1182323424 c:\users\vaio\documents\c-free\tinystr.h
+	<assert.h>
+	<string.h>
+
+1182323424 source:c:\users\vaio\documents\c-free\tinystr.cpp
+	"tinystr.h"
+
+1182323424 source:c:\users\vaio\documents\c-free\tinyxml.cpp
+	<ctype.h>
+	<sstream>
+	<iostream>
+	"tinyxml.h"
+
+1182323424 source:c:\users\vaio\documents\c-free\tinyxmlerror.cpp
+	"tinyxml.h"
+
+1182323424 source:c:\users\vaio\documents\c-free\tinyxmlparser.cpp
+	<ctype.h>
+	<stddef.h>
+	"tinyxml.h"
+	<windows.h>
+
