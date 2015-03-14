@@ -10,6 +10,7 @@
 #include <cstring>
 #include "tinyxml.h"
 #include <windows.h>
+
 #define TIXML_USE_STL
 
 using std::ifstream;
@@ -18,6 +19,8 @@ using std::endl;
 
 using namespace std;
 
+
+const int MAX_PATH_CHAR=160;
 const int MAX_CHARS_PER_LINE = 512;
 const int MAX_TOKENS_PER_LINE = 20;
 const int MAX_CHARS_PER_TOKEN = 15;
@@ -358,31 +361,64 @@ void GetFilesInDirectory(vector<string> &out, const string &directory)
 
 } // GetFilesInDirectory
 
-// #issue do not working well in multy line
+
+
+
+// get project directory
+string ExePath() {
+    char buffer[MAX_PATH_CHAR];
+    GetModuleFileName( NULL, buffer, MAX_PATH_CHAR );
+    string::size_type pos = string( buffer ).find_last_of( "\\/" );
+   // char *path;
+   // path= (char *)malloc(strlen(buffer));
+  // strcpy(path, string( buffer ).substr( 0, pos).c_str());
+
+    return string( buffer ).substr( 0, pos).c_str();
+}
+
+
+
+/*
+
+this function take token and generate liked list from Node
+
+each node contain name command and 4 parmaters but 2 parameter only use in and save them
+
+
+*/
+
+// #issue do not work well in multy line
 Node * getCommand(list <char *> *tokens)
 {
 
     list<char *>::iterator token;
+    vector<string>::iterator file;
     vector<string> files;
 
+    string command_folder=ExePath().append("\\CMD");
+    // cout <<"\n\n\command_folder "<<command_folder.c_str()<< "***";
 
-    GetFilesInDirectory(files,"f:/CMD");
-
-    vector<string>::iterator file;
     string as;
     char *cv;
 
     int num=0;
     int numarg=0;
+
     Node *current=new Node ;
     Node *last= new Node;
     Node *head;
+
+    GetFilesInDirectory(files,command_folder.c_str()); // exe file and Command folder in debug folder
+
+
+
+
 
 
     for ( token = (tokens)->begin(); token != (tokens)->end(); ++token)
     {
 
-        printf("--------------- \n token [%s]? \n----------------",*token);
+        printf(" token [%s]? \n",*token);
         for ( file = files.begin(); file != files.end(); ++file)
 
         {
@@ -395,7 +431,7 @@ Node * getCommand(list <char *> *tokens)
 
             if (as.find(cv)!=-1)
             {
-                printf("--%s--",cv);
+                printf("[%s]",cv);
 
                 numarg=0;
                 current = new Node;
@@ -446,7 +482,7 @@ Node * getCommand(list <char *> *tokens)
 
 
 
-
+// function for show all linked list (Nodes) just for check
 int show_all(Node *head)
 {
 
@@ -454,9 +490,13 @@ int show_all(Node *head)
 
     while(current!=NULL)
     {
-        cout<<current->name<<"*";
+        std::cout<<current->name<<"*";
+        if (current->arg[0])
+        std::cout <<" arg[0] == " <<current->arg[0]<<std::endl;
+        if (current->arg[1])
+        std::cout<< " arg[1] == " <<current->arg[1]<<std::endl;
+      //  printf(" arg[0] == %s  arg[1] == %s\n",current->arg[0],current->arg[1]);
 
-        printf(" arg[0] == %s  arg[1] == %s\n",current->arg[0],current->arg[1]);
         current=current->next;
 
     }
@@ -466,9 +506,13 @@ int show_all(Node *head)
     return 0;
 
 }
+
+
 // #issue_02 return full code by executable file
 int main()
 {
+
+
     char *path="f:/text.txt";
     string *full_code;
     fstream File(path,ios::out | ios::in | ios::binary);
@@ -515,7 +559,7 @@ int main()
 
 //     cout<<"\n " << strcmp(token[n],"okasha");
 
-// return full_code->c_str();
+cout<< full_code->c_str();
 
 
 

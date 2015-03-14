@@ -77,3 +77,15 @@
 	"tinyxml.h"
 	<windows.h>
 
+1426329097 source:f:\bari3\bari3\bari3.cpp
+	<stdio.h>
+	<iostream>
+	<fstream>
+	<list>
+	<vector>
+	<malloc.h>
+	<string.h>
+	<cstring>
+	"tinyxml.h"
+	<windows.h>
+
