@@ -20,7 +20,7 @@ using std::endl;
 using namespace std;
 
 
-const int MAX_PATH_CHAR=160;
+
 const int MAX_CHARS_PER_LINE = 512;
 const int MAX_TOKENS_PER_LINE = 20;
 const int MAX_CHARS_PER_TOKEN = 15;
@@ -33,7 +33,7 @@ int n = 0; //  number of tokens
 class Node
 {
 public:
-    char name[15];
+    char name[150];
 
     char * arg[4]= {};
     Node *next;
@@ -97,11 +97,18 @@ int gettokens(list <char *> *tokens ,char *code)
 }
 
 
-int  check_and_corect_format(char *code)
-{
+/*
+to get text between tags XML for Example
 
-}
+<ar_setup>
+pinMode(_val_01, OUTPUT);
+</ar_setup>
 
+return pinMode(_val_01, OUTPUT);
+
+
+
+*/
 const char * getText(TiXmlElement *elem)
 {
 
@@ -119,6 +126,23 @@ const char * getText(TiXmlElement *elem)
     return NULL;
 }
 
+/*
+
+to get attributes from tag
+
+for example
+
+    <variable var1="_val_01"/>
+
+   str = getAttribute(elem,"var1")
+
+   return _val_01
+
+  where
+   ::elem node this tag variable>
+
+*/
+
 const char * getAttribute(TiXmlElement *elem,char *nAtrr)
 {
     const char *attr;
@@ -133,6 +157,13 @@ const char * getAttribute(TiXmlElement *elem,char *nAtrr)
     return NULL;
 }
 
+/*
+
+this function gets all úXML FIle for Commands in linked list(Nodes) and get text then
+banding together for  forming complete complete arduino C
+
+
+*/
 string * parse_code(Node *head,char *path_save_file)
 
 {
@@ -148,6 +179,7 @@ string * parse_code(Node *head,char *path_save_file)
     Node *current =head;
     TiXmlDocument xml_file;
     TiXmlElement* root;
+
     const char* attr1;
     const char* attr2;
 
@@ -366,14 +398,15 @@ void GetFilesInDirectory(vector<string> &out, const string &directory)
 
 // get project directory
 string ExePath() {
-    char buffer[MAX_PATH_CHAR];
-    GetModuleFileName( NULL, buffer, MAX_PATH_CHAR );
+    char buffer[MAX_PATH];
+    GetModuleFileName( NULL, buffer, MAX_PATH );
     string::size_type pos = string( buffer ).find_last_of( "\\/" );
    // char *path;
    // path= (char *)malloc(strlen(buffer));
   // strcpy(path, string( buffer ).substr( 0, pos).c_str());
-
-    return string( buffer ).substr( 0, pos).c_str();
+    string b;
+    b.append(string( buffer ).substr( 0, pos).c_str());
+    return b;
 }
 
 
@@ -391,28 +424,28 @@ each node contain name command and 4 parmaters but 2 parameter only use in and s
 Node * getCommand(list <char *> *tokens)
 {
 
-    list<char *>::iterator token;
-    vector<string>::iterator file;
-    vector<string> files;
 
-    string command_folder=ExePath().append("\\CMD");
-    // cout <<"\n\n\command_folder "<<command_folder.c_str()<< "***";
 
-    string as;
-    char *cv;
+ const  char *path= ExePath().append("\\CMD").c_str();
+
 
     int num=0;
     int numarg=0;
+
+    vector<string> files;
+    vector<string>::iterator file;
+    list<char *>::iterator token;
+ // must replace "F:\\CMD"  with command_folder
+    GetFilesInDirectory(files,path); // exe file and Command folder in debug folder
+
 
     Node *current=new Node ;
     Node *last= new Node;
     Node *head;
 
-    GetFilesInDirectory(files,command_folder.c_str()); // exe file and Command folder in debug folder
 
-
-
-
+    string as;
+    char *cv;
 
 
     for ( token = (tokens)->begin(); token != (tokens)->end(); ++token)
@@ -431,12 +464,13 @@ Node * getCommand(list <char *> *tokens)
 
             if (as.find(cv)!=-1)
             {
-                printf("[%s]",cv);
+
 
                 numarg=0;
                 current = new Node;
 
                 strcpy((current)->name,as.c_str());
+                cout<<"\n this is Reserved word -- path XMl file " <<(current)->name<<endl;
                 current->next=NULL;
 
                 last->next=current;
@@ -454,6 +488,7 @@ Node * getCommand(list <char *> *tokens)
         {
             // int intval=atoi(cv);
             current->arg[numarg++]=(char *)malloc(strlen(cv)+1);
+
             cout<<"***"<<cv<<"\n";
             strcpy(current->arg[numarg-1],cv);
 
@@ -492,9 +527,13 @@ int show_all(Node *head)
     {
         std::cout<<current->name<<"*";
         if (current->arg[0])
-        std::cout <<" arg[0] == " <<current->arg[0]<<std::endl;
-        if (current->arg[1])
-        std::cout<< " arg[1] == " <<current->arg[1]<<std::endl;
+        std::cout <<" arg[0] == " <<current->arg[0];
+        if (current->arg[1]){
+
+            std::cout<< " arg[1] == " <<current->arg[1]<<std::endl;
+        }
+
+        std::cout<<endl;
       //  printf(" arg[0] == %s  arg[1] == %s\n",current->arg[0],current->arg[1]);
 
         current=current->next;
@@ -530,6 +569,7 @@ int main()
     memset(code, '\0', Size+1);
     File.seekg(0, ios::beg);
     File.read(code,Size);
+    File.close();
 
 
 
@@ -547,6 +587,7 @@ int main()
     if(num)
     {
         Node *head= getCommand(&tokens);
+
         cout<<"\n---------new Node-----------------\n";
         show_all(head);
 
