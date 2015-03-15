@@ -10,7 +10,7 @@
 #include <cstring>
 #include "tinyxml.h"
 #include <windows.h>
-
+#include<conio.h>
 #define TIXML_USE_STL
 
 using std::ifstream;
@@ -262,26 +262,26 @@ string * parse_code(Node *head,char *path_save_file)
 
         }
 
- /* this part specific for replace name attributes (var1 & var2) by corresponding names
-            for example ริฺแ 1
-              gets name=ริฺแ
-              gets arg[0]=1
+        /* this part specific for replace name attributes (var1 & var2) by corresponding names
+                   for example ริฺแ 1
+                     gets name=ริฺแ
+                     gets arg[0]=1
 
-         ริฺแ.ศ file cointain XML data
+                ริฺแ.ศ file cointain XML data
 
-          <variable var1="_var_01"/>  <ar_setup> pinMode(_val_01, OUTPUT); </ar_setup>
+                 <variable var1="_var_01"/>  <ar_setup> pinMode(_val_01, OUTPUT); </ar_setup>
 
-           gets var1= _var_01
-           gets  ar_setup= pinMode(_val_01, OUTPUT);
+                  gets var1= _var_01
+                  gets  ar_setup= pinMode(_val_01, OUTPUT);
 
-           then replace value arg[0] by _var_01 in ar_setup then output
-                 pinMode(1, OUTPUT);
+                  then replace value arg[0] by _var_01 in ar_setup then output
+                        pinMode(1, OUTPUT);
 
-                if (attr1 != NULL){
-                    ar_setup.replace(var1,current->arg[0]);
-                    ar_loop.replace(var2,current->arg[1]);
-                }
-            */
+                       if (attr1 != NULL){
+                           ar_setup.replace(var1,current->arg[0]);
+                           ar_loop.replace(var2,current->arg[1]);
+                       }
+                   */
 
         current=current->next;
 
@@ -472,28 +472,34 @@ int show_all(Node *head)
 
 
 // #issue_02 return full code by executable file
-int main()
+int main(int argc, char * argv[])
 {
 // this path pass to executable file Bari3
 
-    char *path="f:/text.txt";
+    if (!argv[1])
+        return 0;
+    cout<< " /* "<<endl;
+    /*  char *path="f:/text.txt";
+      fstream File(path,ios::out | ios::in | ios::binary);
+      int Size = File.tellg();
+      File.seekg (1, ios::end);
+      */
     string *full_code;
-    fstream File(path,ios::out | ios::in | ios::binary);
-    File.seekg (1, ios::end);
-    int Size = File.tellg();
-
-    char *code;
     list <char *> tokens;
 
+    char *code;
+    int Size = strlen(argv[1]);
     code = (char *) malloc(Size+1)  ;
     if (!code)
     {
         printf("error in allocate block memory");
     }
     memset(code, '\0', Size+1);
-    File.seekg(0, ios::beg);
-    File.read(code,Size);
-    File.close();
+    strcpy(code,argv[1]);
+
+    // File.seekg(0, ios::beg);
+    // File.read(code,Size);
+    // File.close();
 
 
 
@@ -511,8 +517,8 @@ int main()
     if(num)
     {
         Node *head= getCommand(&tokens);
-
-        cout<<"\n---- Command ------\n";
+        cout<< " */ "<<endl;
+        cout<<"\n////_command ------\n";
         show_all(head);
 
         full_code=parse_code(head,"F:/bari3.ino");
@@ -525,7 +531,6 @@ int main()
 //     cout<<"\n " << strcmp(token[n],"okasha");
 
     cout<< full_code->c_str();
-
 
 
 }
