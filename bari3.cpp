@@ -128,18 +128,14 @@ const char * getText(TiXmlElement *elem)
 
 /*
 
-to get attributes from tag
+ to get attributes from tag
 
-for example
-
-    <variable var1="_val_01"/>
-
-   str = getAttribute(elem,"var1")
-
-   return _val_01
+    for example XML DATA <variable var1="_val_01"/>
+    str = getAttribute(elem,"var1")
+    return _val_01
 
   where
-   ::elem node this tag variable>
+   ::elem node this tag variable
 
 */
 
@@ -180,8 +176,8 @@ string * parse_code(Node *head,char *path_save_file)
     TiXmlDocument xml_file;
     TiXmlElement* root;
 
-    const char* attr1;
-    const char* attr2;
+    const char* var1;
+    const char* var2;
 
 
     while(current!=NULL)
@@ -206,8 +202,8 @@ string * parse_code(Node *head,char *path_save_file)
 
             if (elemName=="variable" )
             {
-                attr1=   getAttribute(elem,"var1");
-                attr2=   getAttribute(elem,"var2");
+                var1=   getAttribute(elem,"var1");
+                var2=   getAttribute(elem,"var2");
             }
             if(elemName == "ar_include")
             {
@@ -252,22 +248,41 @@ string * parse_code(Node *head,char *path_save_file)
             }
             else if(elemName == "ar_extra")
             {
+
+
                 if (getText(elem) != NULL)
                 {
-
-
                     ar_extra.append(getText(elem));
                     ar_extra.append("\n");
                 }
 
+
+
             }
 
         }
-        /*
-                if (attr1 != NULL)
-                    full_code.replace(attr1,current->arg[0]);
 
-        */
+ /* this part specific for replace name attributes (var1 & var2) by corresponding names
+            for example Удкс 1
+              gets name=Удкс
+              gets arg[0]=1
+
+         Удкс.Ш file cointain XML data
+
+          <variable var1="_var_01"/>  <ar_setup> pinMode(_val_01, OUTPUT); </ar_setup>
+
+           gets var1= _var_01
+           gets  ar_setup= pinMode(_val_01, OUTPUT);
+
+           then replace value arg[0] by _var_01 in ar_setup then output
+                 pinMode(1, OUTPUT);
+
+                if (attr1 != NULL){
+                    ar_setup.replace(var1,current->arg[0]);
+                    ar_loop.replace(var2,current->arg[1]);
+                }
+            */
+
         current=current->next;
 
     }
@@ -285,86 +300,11 @@ string * parse_code(Node *head,char *path_save_file)
     full_code.append("\n");
 
 
-   // cout <<full_code.c_str();
-return &full_code;
+    // cout <<full_code.c_str();
+    return &full_code;
 }
 
-/*
- char fc;
- char lc;
- int offset;
- char tmp[20];
-
- for ( i = (tokens)->begin(); i != (tokens)->end(); ++i)
-{
-    if (*i==NULL)
-     continue;
-
-     fc=*(*i);
-     offset=0;
-
-     while(*(*i + ++offset)!='\0'){}
-
-     lc=*(*i+--offset);
-
-    // cout <<"last char " <<lc<<endl;
-
-switch(fc){
-case '[':
-case '{':
-case '(':
-    //////////
-//case ']':
-//case '}':
-//case ')':
-
-
-(ntokens)->remove()
-(ntokens)->push_front(*i + 1);
-(ntokens)->push_front(*i + 1);
-
-// (tokens)->push_back(*i);
-
-   //  *(ntoken[i+shift])=fc;
-
-//printf("old address %d num %d",ntoken[i+ ++shift],i);
-
-    // ntoken[i+ ++shift]=new_str(strlen(dtoken[i])) ;
-
-// printf(" new address %d",ntoken[i+ shift]);
-
-
-  //   printf(" new word %s",ntoken[i+shift]);
-
-// return 0;
-//  printf("\n * token = %s \n" ,ntoken[i+shift]);
-
-break;
-
-}
-switch(lc){
-case '[':
-case '{':
-case '(':
-    //////////
-case ']':
-case '}':
-case ')':
-
-memset((dtoken[i]+offset), '\0', 1);
-*ntoken[i+shift]=*dtoken[i];
-*(ntoken[i+ ++shift])=lc;
-
-
-
-break;
-
-
-}
-
- // if (!ntoken[i]) break; // no more tokens
-}
-*/
+// function gets files in certain folder @StackOverFlow.com
 void GetFilesInDirectory(vector<string> &out, const string &directory)
 {
 
@@ -396,37 +336,30 @@ void GetFilesInDirectory(vector<string> &out, const string &directory)
 
 
 
-// get project directory
-string ExePath() {
+// get project directory @StackOverFlow.com
+string ExePath()
+{
     char buffer[MAX_PATH];
     GetModuleFileName( NULL, buffer, MAX_PATH );
     string::size_type pos = string( buffer ).find_last_of( "\\/" );
-   // char *path;
-   // path= (char *)malloc(strlen(buffer));
-  // strcpy(path, string( buffer ).substr( 0, pos).c_str());
-    string b;
-    b.append(string( buffer ).substr( 0, pos).c_str());
-    return b;
+    return  string( buffer ).substr( 0, pos).c_str();
 }
 
 
 
 /*
 
-this function take token and generate liked list from Node
-
-each node contain name command and 4 parmaters but 2 parameter only use in and save them
-
+this function take tokens and generate liked list (Nodes)
+each node contain name command and 4 parmeters but 2 parameter only use in and saved them
 
 */
 
-// #issue do not work well in multy line
+// #issue there are sum defects when there is multi line in code
 Node * getCommand(list <char *> *tokens)
 {
 
 
-
- const  char *path= ExePath().append("\\CMD").c_str();
+    const  char *path= ExePath().append("\\CMD").c_str(); // get CMD (Commad) directory contine reserved word
 
 
     int num=0;
@@ -435,7 +368,7 @@ Node * getCommand(list <char *> *tokens)
     vector<string> files;
     vector<string>::iterator file;
     list<char *>::iterator token;
- // must replace "F:\\CMD"  with command_folder
+
     GetFilesInDirectory(files,path); // exe file and Command folder in debug folder
 
 
@@ -444,32 +377,32 @@ Node * getCommand(list <char *> *tokens)
     Node *head;
 
 
-    string as;
-    char *cv;
+    string _file;
+    char *_token;
 
 
     for ( token = (tokens)->begin(); token != (tokens)->end(); ++token)
     {
 
-        printf(" token [%s]? \n",*token);
+        printf(" token [%s] ?\n",*token);
         for ( file = files.begin(); file != files.end(); ++file)
 
         {
-            as=*file;
-            cv=*token;
-
-            //  strcat(cv,".иЈ");
-            if (cv==NULL) continue;
+            _file=*file;
+            _token=*token;
 
 
-            if (as.find(cv)!=-1)
+            if (_token==NULL) continue;
+
+
+            if (_file.find(_token)!=-1)
             {
-
 
                 numarg=0;
                 current = new Node;
 
-                strcpy((current)->name,as.c_str());
+                strcpy((current)->name,_file.c_str());
+
                 cout<<"\n this is Reserved word -- path XMl file " <<(current)->name<<endl;
                 current->next=NULL;
 
@@ -484,29 +417,19 @@ Node * getCommand(list <char *> *tokens)
         }
         last=current;
 
-        if (cv!=NULL && current !=NULL && isdigit(*cv))
+        if (_token!=NULL && current !=NULL && isdigit(*_token))
         {
             // int intval=atoi(cv);
-            current->arg[numarg++]=(char *)malloc(strlen(cv)+1);
+            current->arg[numarg++]=(char *)malloc(strlen(_token)+1);
 
-            cout<<"***"<<cv<<"\n";
-            strcpy(current->arg[numarg-1],cv);
-
+            cout<<"***"<<_token<<"\n";
+            strcpy(current->arg[numarg-1],_token);
 
         }
 
 
-        //   if (current->name != NULL){
-
-
-//
-        // }
-
 
     }
-
-
-
 
 
 
@@ -527,14 +450,15 @@ int show_all(Node *head)
     {
         std::cout<<current->name<<"*";
         if (current->arg[0])
-        std::cout <<" arg[0] == " <<current->arg[0];
-        if (current->arg[1]){
+            std::cout <<" arg[0] == " <<current->arg[0];
+        if (current->arg[1])
+        {
 
             std::cout<< " arg[1] == " <<current->arg[1]<<std::endl;
         }
 
         std::cout<<endl;
-      //  printf(" arg[0] == %s  arg[1] == %s\n",current->arg[0],current->arg[1]);
+        //  printf(" arg[0] == %s  arg[1] == %s\n",current->arg[0],current->arg[1]);
 
         current=current->next;
 
@@ -550,7 +474,7 @@ int show_all(Node *head)
 // #issue_02 return full code by executable file
 int main()
 {
-
+// this path pass to executable file Bari3
 
     char *path="f:/text.txt";
     string *full_code;
@@ -582,13 +506,13 @@ int main()
 
 
     int num=gettokens(&tokens, code);
-    printf("number token %d\n ",num);
+    printf("number token %d\n",num);
 
     if(num)
     {
         Node *head= getCommand(&tokens);
 
-        cout<<"\n---------new Node-----------------\n";
+        cout<<"\n---- Command ------\n";
         show_all(head);
 
         full_code=parse_code(head,"F:/bari3.ino");
@@ -600,7 +524,7 @@ int main()
 
 //     cout<<"\n " << strcmp(token[n],"okasha");
 
-cout<< full_code->c_str();
+    cout<< full_code->c_str();
 
 
 
