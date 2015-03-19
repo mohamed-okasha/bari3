@@ -1,0 +1,24 @@
+<root>
+
+<constant const1="_const_01" /> 
+
+<ar_include> </ar_include>
+
+
+
+<ar_initial> 
+
+
+</ar_initial>
+
+<ar_setup>
+
+</ar_setup>
+
+<ar_loop>
+delay(_const_01);
+</ar_loop>
+
+<ar_extra>
+</ar_extra>
+</root>

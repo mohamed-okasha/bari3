@@ -153,10 +153,21 @@ const char * getAttribute(TiXmlElement *elem,char *nAtrr)
     return NULL;
 }
 
+// this to replace a particular range in a string with another string in all text @StackOverFlow.com
+void replaceAll(std::string& str, const std::string& from, const std::string& to) {
+    if(from.empty())
+        return;
+    size_t start_pos = 0;
+    while((start_pos = str.find(from, start_pos)) != std::string::npos) {
+        str.replace(start_pos, from.length(), to);
+        start_pos += to.length(); // In case 'to' contains 'from', like replacing 'x' with 'yx'
+    }
+}
+
 /*
 
-this function gets all �XML FIle for Commands in linked list(Nodes) and get text then
-banding together for  forming complete complete arduino C
+this function gets all XML FIle from Commands in linked list(Nodes) and get text to
+banding together for  forming complete arduino C
 
 
 */
@@ -176,8 +187,8 @@ string * parse_code(Node *head,char *path_save_file)
     TiXmlDocument xml_file;
     TiXmlElement* root;
 
-    const char* var1;
-    const char* var2;
+    const char* _const1;
+    const char* _const2;
 
 
     while(current!=NULL)
@@ -200,10 +211,10 @@ string * parse_code(Node *head,char *path_save_file)
             TiXmlText* text ;
 
 
-            if (elemName=="variable" )
+            if (elemName=="constant" )
             {
-                var1=   getAttribute(elem,"var1");
-                var2=   getAttribute(elem,"var2");
+                _const1=   getAttribute(elem,"const1");
+                _const2=   getAttribute(elem,"const2");
             }
             if(elemName == "ar_include")
             {
@@ -263,11 +274,11 @@ string * parse_code(Node *head,char *path_save_file)
         }
 
         /* this part specific for replace name attributes (var1 & var2) by corresponding names
-                   for example ���� 1
-                     gets name=����
+                   for example Удкс 1
+                     gets name=Удкс
                      gets arg[0]=1
 
-                ����.� file cointain XML data
+                Удкс.Ш file cointain XML data
 
                  <variable var1="_var_01"/>  <ar_setup> pinMode(_val_01, OUTPUT); </ar_setup>
 
@@ -276,12 +287,21 @@ string * parse_code(Node *head,char *path_save_file)
 
                   then replace value arg[0] by _var_01 in ar_setup then output
                         pinMode(1, OUTPUT);
+*/
+                       if (_const1 != NULL){
+                        replaceAll(ar_setup,_const1,current->arg[0]);
+                        replaceAll(ar_loop,_const1,current->arg[0]);
+                          // ar_setup.replace(var1,current->arg[0]);
 
-                       if (attr1 != NULL){
-                           ar_setup.replace(var1,current->arg[0]);
-                           ar_loop.replace(var2,current->arg[1]);
                        }
-                   */
+                       if (_const2 != NULL){
+                        replaceAll(ar_setup,_const2,current->arg[1]);
+                        replaceAll(ar_loop,_const2,current->arg[1]);
+                          // ar_setup.replace(var1,current->arg[0]);
+
+                       }
+
+
 
         current=current->next;
 
@@ -421,8 +441,7 @@ Node * getCommand(list <char *> *tokens)
         {
             // int intval=atoi(cv);
             current->arg[numarg++]=(char *)malloc(strlen(_token)+1);
-
-            cout<<"***"<<_token<<"\n";
+                cout<<"\n this is argument number ["<<numarg-1 <<"]"<<" = "<<_token<<endl;
             strcpy(current->arg[numarg-1],_token);
 
         }
@@ -448,7 +467,7 @@ int show_all(Node *head)
 
     while(current!=NULL)
     {
-        std::cout<<current->name<<"*";
+        std::cout<<"// "<<current->name<<"*";
         if (current->arg[0])
             std::cout <<" arg[0] == " <<current->arg[0];
         if (current->arg[1])
@@ -470,6 +489,29 @@ int show_all(Node *head)
 
 }
 
+ int convert_word_number( list <char *> *tokens){
+
+  list<char *>::iterator token;
+
+
+    string _file;
+    char *_token;
+
+
+    for ( token = (tokens)->begin(); token != (tokens)->end(); ++token)
+    {
+
+
+    }
+
+
+ // لتحويل الأرقام المكتوبة باللغة العربية إلى أرقام فعلية
+
+
+
+ return 1;
+
+ }
 
 // #issue_02 return full code by executable file
 int main(int argc, char * argv[])
@@ -497,10 +539,10 @@ int main(int argc, char * argv[])
     memset(code, '\0', Size+1);
     strcpy(code,argv[1]);
 
+
     // File.seekg(0, ios::beg);
     // File.read(code,Size);
     // File.close();
-
 
 
     //  list<char *>::iterator i;
@@ -512,13 +554,20 @@ int main(int argc, char * argv[])
 
 
     int num=gettokens(&tokens, code);
+    convert_word_number(&tokens);
+
+
+
+
+
+}
     printf("number token %d\n",num);
 
     if(num)
     {
         Node *head= getCommand(&tokens);
         cout<< " */ "<<endl;
-        cout<<"\n////_command ------\n";
+        cout<<"\n//_commands \n";
         show_all(head);
 
         full_code=parse_code(head,"F:/bari3.ino");
@@ -555,7 +604,7 @@ int add(Node * head,string name)
 
 
 
-// ����
+// Упус
         current=current->next;
 
     }
