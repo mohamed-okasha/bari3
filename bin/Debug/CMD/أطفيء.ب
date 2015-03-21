@@ -1,5 +1,5 @@
 <root>
-<variable var1="_val_01"/> 
+<constant const1="_const_01" /> 
 
 <ar_include> </ar_include>
 
@@ -11,12 +11,12 @@
 </ar_initial>
 
 <ar_setup>
-pinMode(_val_01, OUTPUT);
+pinMode(_const_01, OUTPUT);
 </ar_setup>
 
 
 <ar_loop>
-digitalWrite(_val_01,lOW); 
+digitalWrite(_const_01,LOW); 
 </ar_loop>
 
 <ar_extra>

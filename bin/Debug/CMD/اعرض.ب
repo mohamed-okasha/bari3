@@ -8,7 +8,7 @@
 
 <ar_initial> 
 
-Serial.Begin(9600);
+Serial.begin(9600);
 </ar_initial>
 
 <ar_setup>

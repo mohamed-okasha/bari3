@@ -16,7 +16,7 @@
 </ar_setup>
 
 <ar_loop>
-delay(_const_01);
+delay(_const_01*1000);
 </ar_loop>
 
 <ar_extra>

@@ -171,7 +171,7 @@ banding together for  forming complete arduino C
 
 
 */
-string * parse_code(Node *head,char *path_save_file)
+void  parse_code(Node *head,char *path_save_file)
 
 {
 
@@ -321,7 +321,7 @@ string * parse_code(Node *head,char *path_save_file)
 
 
     // cout <<full_code.c_str();
-    return &full_code;
+    cout<< full_code.c_str();
 }
 
 // function gets files in certain folder @StackOverFlow.com
@@ -488,7 +488,7 @@ int show_all(Node *head)
     return 0;
 
 }
-
+// not complete
  int convert_word_number( list <char *> *tokens){
 
   list<char *>::iterator token;
@@ -518,7 +518,7 @@ int main(int argc, char * argv[])
 {
 // this path pass to executable file Bari3
 
-    if (!argv[1])
+   if (!argv[1])
         return 0;
     cout<< " /* "<<endl;
     /*  char *path="f:/text.txt";
@@ -526,7 +526,7 @@ int main(int argc, char * argv[])
       int Size = File.tellg();
       File.seekg (1, ios::end);
       */
-    string *full_code;
+    string full_code;
     list <char *> tokens;
 
     char *code;
@@ -560,7 +560,7 @@ int main(int argc, char * argv[])
 
 
 
-}
+
     printf("number token %d\n",num);
 
     if(num)
@@ -570,18 +570,14 @@ int main(int argc, char * argv[])
         cout<<"\n//_commands \n";
         show_all(head);
 
-        full_code=parse_code(head,"F:/bari3.ino");
+        parse_code(head,"F:/bari3.ino");
 
     }
 
 
+   // cout<< full_code.c_str();
 
-
-//     cout<<"\n " << strcmp(token[n],"okasha");
-
-    cout<< full_code->c_str();
-
-
+return 1;
 }
 
 
