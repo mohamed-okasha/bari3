@@ -1,0 +1,84 @@
+
+<root  mode ="l"  keywords="ÕÍíÍ" vector="ÚÏÏ" >
+
+<constant const1="_const_01" _const_01="v"   /> 
+
+<ar_initial>
+
+int read_i(char *message){
+	int var;
+	char val [10];
+	Serial.println(message);
+jmp:	
+ if(!Serial.available())
+	goto jmp;
+	
+	byte ch;
+	int index =0;
+	while(Serial.available()){
+	ch=  Serial.read ();
+	val[index++] = ch;
+	val [index] = '\0';
+	delay(10);
+	}
+ 
+ 
+  return var =atoi(val);
+
+}
+
+</ar_initial>
+
+<ar_loop>
+_const_01=read_i("ÃÏÎá ÚÏÏ ÕÍíÍ :");
+</ar_loop>
+
+
+
+</root>
+
+
+<subroot mode="sl"  vector="ÇáãäİĞ;ÇáÊãÇËáí">
+
+<constant const1="_const_01" _const_01="v" const2="_const_02" _const_02="n" /> 
+
+
+
+<ar_loop>
+_const_01=analogRead(_const_02);
+</ar_loop>
+
+
+</subroot>
+
+
+<subroot mode="sl"  keywords="ÇáÌåÏ;ÌåÏ" vector="ÇáãäİĞ;ÇáÊãÇËáí">
+
+<constant const1="_const_01" _const_01="v" const2="_const_02" _const_02="n" /> 
+
+
+
+<ar_loop>
+_const_01=analogRead(_const_02) * (5.0 / 1023.0);
+</ar_loop>
+
+
+</subroot>
+
+<subroot mode="sl"    vector="ÇáãäİĞ;ÇáÑŞãí">
+
+<constant const1="_const_01" _const_01="v"  const2="_const_02" _const_02="n"/> 
+
+
+
+<ar_loop>
+_const_01 =digitalRead(_const_02);
+</ar_loop>
+
+
+</subroot>
+
+
+
+
+

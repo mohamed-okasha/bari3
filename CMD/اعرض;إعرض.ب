@@ -1,0 +1,21 @@
+<root>
+
+<constant const1="_const_01" _const_01="v1"  /> 
+
+<ar_include>#include &lt;LiquidCrystal.h&gt; </ar_include>
+
+
+
+<ar_initial> 
+LiquidCrystal lcd(12, 11, 5, 4, 3, 2);
+</ar_initial>
+
+<ar_setup>
+lcd.begin(16, 2);
+</ar_setup>
+
+<ar_loop>
+lcd.print(_const_01);
+</ar_loop>
+
+</root>

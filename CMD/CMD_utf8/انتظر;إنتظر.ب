@@ -1,0 +1,20 @@
+﻿<root>
+
+<constant const1="_const_01" /> 
+
+<ar_loop>
+delay(_const_01);
+</ar_loop>
+
+</root>
+
+<subroot keywords="ثانية;ثوان;">
+
+<constant const1="_const_01" inch="0" /> 
+
+
+<ar_loop>
+delay(_const_01*1000);
+</ar_loop>
+
+</subroot>

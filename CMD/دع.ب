@@ -1,0 +1,45 @@
+
+
+
+<root    vector="ÇáãäÝÐ">
+
+<constant const1="_const_01"  const2="_const_02"  /> 
+
+
+<ar_loop>
+pinMode(_const_01,_const_02);
+</ar_loop>
+
+</root>
+<subroot  mode="sl" keywords="ÏÇÆãÇ;ÃÈÏÇ" vector="ÇáãäÝÐ" >
+
+<constant const1="_const_01" const2="_const_02"  /> 
+
+
+
+
+<ar_setup>
+pinMode(_const_01,_const_02);
+</ar_setup>
+
+
+</subroot>
+<subroot keywords="íÓÇæí"  >
+
+<constant const1="_const_01" const2="_const_02"  /> 
+
+
+<ar_loop>
+_const_01 = _const_02;
+</ar_setup>
+
+
+</ar_loop>
+
+</subroot>
+
+
+
+
+
+

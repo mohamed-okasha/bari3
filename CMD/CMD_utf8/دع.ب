@@ -1,0 +1,24 @@
+﻿<root>
+
+<constant const1="_const_01"  const2="_const_02"  /> 
+
+
+<ar_loop>
+DigitalMode(_const_01,_const_02);
+</ar_loop>
+
+</root>
+
+<subroot keywords="دائما;أبدا" >
+
+<constant const1="_const_01" const2="_const_02"  /> 
+
+
+
+
+<ar_setup>
+DigitalMode(_const_01,_const_02);
+</ar_setup>
+
+
+</root>

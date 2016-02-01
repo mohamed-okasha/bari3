@@ -1,0 +1,33 @@
+<root mode ="l" >
+<constant const1="_const_01" const2="_const_02"  /> 
+
+<ar_loop>
+         analogWrite(_const_01,_const_02);
+</ar_loop>
+
+</root>
+
+
+<root mode ="l" keywords="ÇáÓÇÈÞ;ÇáÓÇÈÞÉ;ÇáÃÎíÑÉ">
+
+<constant const1="_const_01" const2="_const_02"  /> 
+
+
+<ar_initial>
+int _const__01__const_01=  0;
+</ar_initial>
+
+<ar_loop>
+  incr(_const_01,_const_02,_const__01__const_01);
+</ar_loop>
+
+<ar_extra>
+void incr(int pin,int value,int &amp; last){
+analogWrite(pin,last+value); 
+last =last+value;
+}
+
+</ar_extra>
+
+
+</root>

@@ -1,0 +1,39 @@
+<root mode ="l">
+
+<constant const1="_const_01" const2="_const_02" 
+const3="_const_03" effective="_const_01" /> 
+
+
+
+
+<ar_loop>
+          for(_const_01=_const_02;_const_01&lt;=_const_03;_const_01++)
+</ar_loop>
+
+<ar_extra>
+
+
+</ar_extra>
+
+
+</root>
+
+<root mode ="l" keywords="ÊäÇÒáí">
+
+<constant const1="_const_01" const2="_const_02" 
+const3="_const_03" effective="_const_01" /> 
+
+
+
+
+<ar_loop>
+          for(_const_01=_const_02;_const_01 >_const_03;_const_01--)
+</ar_loop>
+
+<ar_extra>
+
+
+</ar_extra>
+
+
+</root>

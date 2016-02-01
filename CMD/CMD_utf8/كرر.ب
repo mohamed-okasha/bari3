@@ -1,0 +1,16 @@
+﻿<root>
+
+<constant const1="_const_01"  _const_01= "v" /> 
+
+<ar_include> </ar_include>
+
+
+<ar_loop>
+for(int __tmp=_const_01;__tmp>=0;__tmp--)
+</ar_loop>
+
+<ar_extra>
+
+</ar_extra>
+</root>
+

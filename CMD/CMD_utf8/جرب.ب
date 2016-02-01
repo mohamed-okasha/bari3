@@ -1,0 +1,21 @@
+﻿<root mode ="iil">
+
+<constant const1="_const_01" const2="_const_02" _const_01='s' /> 
+
+
+
+
+<ar_loop>
+   incr(_const_01,_const_02);
+</ar_loop>
+
+<ar_extra>
+void incr(int pin,int value){
+analogWrite(pin,_const_01+value); 
+_const_01 =_const_01+value;
+}
+
+</ar_extra>
+
+
+</root>

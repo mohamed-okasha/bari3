@@ -1,0 +1,16 @@
+      <root mode="l">
+
+<constant const1="_const_01" /> 
+
+
+<ar_setup>
+pinMode(_const_01, OUTPUT);
+</ar_setup>
+
+
+<ar_loop>
+digitalWrite(_const_01,HIGH); 
+</ar_loop>
+
+
+</root>

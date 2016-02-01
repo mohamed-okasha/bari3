@@ -1,0 +1,47 @@
+<root mode="l" >
+
+<constant const1="_const_01" keywords="ãÓÇÝÉ;ÇáÊÑÇÓæäß" /> 
+
+
+<ar_initial>
+int trigPin=6;
+int echoPin=7;
+long duration;
+</ar_initial>
+
+
+<ar_setup>
+ pinMode(trigPin, OUTPUT); 
+ pinMode(echoPin, INPUT);
+</ar_setup>
+
+<ar_loop>
+_const_01=ultra_HC();
+</ar_loop>
+
+<ar_extra>
+int ultra_HC(){
+
+  digitalWrite(trigPin, LOW);
+  delayMicroseconds(2);
+  digitalWrite(trigPin, HIGH);
+  delayMicroseconds(10);
+  digitalWrite(trigPin, LOW);
+
+  duration = pulseIn(echoPin, HIGH);
+  
+  return microsecondsToCentimeters(duration);
+}
+
+
+long microsecondsToCentimeters(long microseconds)
+
+{
+
+ return microseconds / 29 / 2;
+
+}
+
+</ar_extra>
+</root>
+

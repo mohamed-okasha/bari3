@@ -1,0 +1,23 @@
+﻿<root mode ="l">
+
+<constant const1="_const_01" const2="_const_02"  /> 
+
+
+<ar_initial>
+int _const__01__const_01=  255;
+</ar_initial>
+
+<ar_loop>
+   decr(_const_01,_const_02,_const__01__const_01);
+</ar_loop>
+
+<ar_extra>
+void decr(int pin,int value,int &amp; last){
+analogWrite(pin,last-value); 
+last =last-value;
+}
+
+</ar_extra>
+
+
+</root>

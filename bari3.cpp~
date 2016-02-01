@@ -1,0 +1,1139 @@
+// bari3.cpp: Mohamed Okasha
+//description: it's compiler source to source , convert code from bari3 commands to Arduino c style
+// for more description e-mail Mohammmed.okasha.ps@gmail.com
+
+#include <iostream>
+#include <fstream>
+#include <list>
+#include <string>
+#include "strprc.h"
+#include "bari3.h"
+
+#include <vector>
+
+#include "tinyxml.h"
+
+#include <stdio.h>  /* defines FILENAME_MAX */
+
+#include <dirent.h>
+
+#include <glob.h>
+
+#define TIXML_USE_STL
+
+using namespace std;
+#ifdef WINDOWS
+
+  //  #define GetCurrentDir _getcwd
+#else
+    #include <unistd.h>
+    #define GetCurrentDir getcwd
+ #endif
+
+
+//char * getcwd (char *buffer, size_t size);
+using namespace std;
+
+
+
+
+/*
+
+to get text from tags in XML for Example
+
+<tag_name> test </tag_name> in xml file
+
+[call] getText(elem)
+
+[return] test
+
+::where elem is object of type TiXmlElement contain XML Tag <tag_name>
+
+    -see files in /CMD folder in the executable directory
+
+*/
+const char * getText(TiXmlElement *elem)
+{
+
+    for(TiXmlNode* e = elem->FirstChild(); e != NULL; e = e->NextSibling())
+    {
+        TiXmlText* text = e->ToText();
+        if(text == NULL)
+            continue;
+
+        return text->ToText()->Value();
+    }
+    return NULL;
+}
+
+/*
+
+ to get attributes from tags
+
+    for example elem contain XML tag <variable>
+
+    where in the file
+
+    <variable var1="_val_01"/>
+
+   [call] getAttribute(elem,"var1")
+   [return] _val_01
+
+
+  :: where elem is object of type TiXmlElement contain XML Tag <variable>
+
+*/
+
+const char * getAttribute(TiXmlElement *elem,const char *nAtrr)
+{
+    const char *attr;
+
+    attr = elem->Attribute(nAtrr);
+    if(attr != NULL)
+    {
+        return attr;
+    }
+
+    return NULL;
+}
+
+
+
+/*
+
+this function gets all reserved word and associated XML FIle from COMMAND LINKED LIST then get code element to
+banding together for forming complete arduino C
+
+
+*/
+void  parse_code(Node *head,string &full_code)
+
+{
+
+    // define code structure arduino c
+
+    std::string ar_include,tmp_include;
+    std::string ar_initial,tmp_initial,var_initial;
+    std::string ar_setup,tmp_setup;
+    std::string ar_loop,tmp_loop;
+    std::string ar_extra,tmp_extra;
+
+
+    std::string buffer;
+
+
+
+    Node *current =head; // head of command linked list ;simple data structure contain reserved word and some of property
+     Node *last_node_tmp =NULL;
+    TiXmlDocument xml_file;
+    TiXmlElement* root; // thes pointer to the main tag in XML file contains element code for any reserver word
+
+    const char* _const1;
+    const char* _const2;
+    const char* _const3;
+    const char* _const4;
+    const char* _const5;
+    const char* _const6;
+
+    const char* effective;
+    string effective_last_node;
+
+    const char* _const1_type;
+    const char* _const2_type;
+    const char* _const3_type;
+    const char* _const4_type;
+    const char* _const5_type;
+    const char* _const6_type;
+
+    const char* tmp;
+   const char *__vector;
+
+
+
+    // cout<<"\n step1 \n";
+    while(current!=NULL) // pass to all  command linked list item
+    {
+
+
+        /* if this item reserved symbole append it
+         to ar_loop stage whare is main stage of code
+        */
+        if (*current->name == '{' || *current->name== '}' )
+        {
+
+            ar_loop.append(" ").append(current->name).append(" ");
+            current=current->next;
+
+            continue;
+        }
+
+
+        xml_file.LoadFile(current->name); // load xml file associated with this command
+        root=xml_file.FirstChildElement(); // get root ; main tag in XML file contain code elements
+
+        if(root == NULL)
+        {
+
+            cerr << "\n// Failed to load file: No root element. current cmd "<< current->name << endl;
+        }
+
+
+
+            for(TiXmlElement* elem = root; elem != NULL; elem = elem->NextSiblingElement())
+            {
+
+                // cout<<" ___parse :current->_vector::"<<current->_vector<<endl;
+
+
+
+                if (!current->Vectors.empty()){
+                __vector=getAttribute(elem,"vector");
+
+                        // cout<<" ___parse :__vector:"<<__vector<<endl;
+                if (__vector !=NULL){
+ //cout<<" ___parse :__vector:"<<__vector<<endl;
+                    if( strcmp(current->Vectors.c_str(),__vector))
+                        continue;
+                }else{
+                continue;
+                }
+                }
+
+
+            if (!current->keywords.empty()) // if not empty
+                {
+                tmp=getAttribute(elem,"keywords");
+
+                if (tmp != NULL)
+                {
+                    if (string(tmp).find(current->keywords)==-1)
+                     continue;
+
+                }
+                else{
+                continue;
+                }
+
+                }       // cout<<"\n _vector.c_str():"<<current->_vector.c_str()<<"\n";
+
+
+// cout<<"\n // keywords:: "<<current->keywords<<"\n // Vectors:: "<<current->_vector<<endl;
+
+             //   cout<<"\n ||** "<<current->keywords<< " ** "<<tmp;
+                root=elem;
+                    break;
+
+
+
+
+
+            }
+
+
+
+
+
+
+        /* get all element code from root and make some process
+
+        */
+//        listword.push_back(); // save this word to list to avoid repitition some part of code for exp include liberary
+        for(TiXmlElement* elem = root->FirstChildElement(); elem != NULL; elem = elem->NextSiblingElement())
+        {
+            std::string elemName = elem->Value();
+            TiXmlText* text ;
+
+
+
+            if (elemName=="constant" )
+            {
+                _const1=   getAttribute(elem,"const1");
+                if (_const1 != NULL)
+                _const1_type= getAttribute(elem,_const1);
+
+                _const2=   getAttribute(elem,"const2");
+
+                if (_const2 != NULL)
+                _const2_type= getAttribute(elem,_const2);
+
+
+                _const3=   getAttribute(elem,"const3");
+                if (_const3 != NULL)
+                _const3_type= getAttribute(elem,_const3);
+
+                _const4=   getAttribute(elem,"const4");
+
+                if (_const4 != NULL)
+                _const4_type= getAttribute(elem,_const4);
+
+                _const5=   getAttribute(elem,"const5");
+                if (_const5 != NULL)
+                _const5_type= getAttribute(elem,_const5);
+
+                _const6=   getAttribute(elem,"const6");
+                if (_const6 != NULL)
+                _const6_type= getAttribute(elem,_const6);
+
+                effective=getAttribute(elem,"effective");
+
+            }
+            if(elemName == "ar_include")
+            {
+
+                if (getText(elem) != NULL)
+                {
+
+                    tmp_include.append(getText(elem));
+                    tmp_include.append("\n");
+                }
+
+            }
+            else if(elemName == "ar_initial")
+            {
+                if (getText(elem) != NULL)
+                {
+
+                    tmp_initial.append(getText(elem));
+                    tmp_initial.append("\n");
+                }
+
+            }
+            else if(elemName == "ar_setup")
+            {
+                if (getText(elem) != NULL)
+                {
+                    // ar_setup.append("void setup() {\n");
+                    tmp_setup.append(getText(elem));
+                    tmp_setup.append("\n");
+                }
+            }
+            else if(elemName == "ar_loop")
+            {
+                if (getText(elem) != NULL)
+                {
+                    //full_code.append("void loop() {\n");
+                    tmp_loop.append(getText(elem));
+                    tmp_loop.append("\n");
+
+                }
+
+            }
+            else if(elemName == "ar_extra")
+            {
+
+
+                if (getText(elem) != NULL)
+                {
+                    tmp_extra.append(getText(elem));
+                    tmp_extra.append("\n");
+                }
+
+
+
+            }
+
+        }
+
+        ///////////////////////// replace constant
+
+
+        buffer.erase(0);
+        if (_const1 != NULL)
+        {
+            //cout<<"\n //_______step**^"<<endl;
+
+            if (current->type[0]=='v'){
+//cout<<"\n //_______step**___"<<endl;
+
+                buffer.append(getVarType(_const1_type)).append(" ").append(current->arg[0]).append(" = 0;\n");
+//cout<<"\n // _______step**20"<<endl;
+
+
+                } /*else if (_const1_type != 0 && strcmp(_const1_type,"s")==0){
+cout<<"\n // _______step**21"<<endl;
+
+                const char * cch=(const char *)current->n_index;
+                 buffer.append(getVarType(_const1_type)).append(" s").append(_const1).append(" = 0;\n");
+               // buffer.append(" int ").append(_const1).append("test" ).append(" = 0;\n");
+
+                }
+                */
+
+            if(!buffer.empty()){
+
+                 if (var_initial.find(buffer) ==-1){
+                     var_initial.append(buffer);
+                   //  cout<<"// ar_initial.append**20"<<var_initial<<endl;
+                 }
+            }
+
+
+
+            if (current->arg[0]==NULL  && _const1_type == NULL || current->arg[0]==NULL &&  _const1_type != NULL  && strcmp(_const1_type,"c") ){
+             current->arg[0]=(char *)malloc(16);
+             if (!effective_last_node.empty()){
+
+             strcpy(current->arg[0],effective_last_node.c_str());
+            }else{
+
+
+            strcpy(current->arg[0]," tmp ");
+
+            }
+
+
+
+            }
+
+
+          //  cout<<"\n // _______step****"<<endl;
+
+
+
+            replaceAll(tmp_initial,_const1,current->arg[0]);
+            replaceAll(tmp_setup,_const1,current->arg[0]);
+            replaceAll(tmp_loop,_const1,current->arg[0]);
+            replaceAll(tmp_extra,_const1,current->arg[0]);
+
+            // ar_setup.replace(var1,current->arg[0]);
+
+        }
+      //  cout<<"\n //_______step20___________<<";
+
+buffer.erase(0);
+        if (_const2 != NULL)
+        {
+            if (current->type[1]=='v')
+            {
+               // cout<<"\n // _______step21___________<<";
+                 buffer.append(getVarType(_const2_type)).append(" ").append(current->arg[1]).append(" = 0;\n");
+
+                if (var_initial.find(buffer) ==-1){
+                    var_initial.append(buffer);
+
+                }
+
+
+
+            }
+            if (current->arg[1] == 0 ){
+             current->arg[1]=(char *)malloc(4);
+             strcpy(current->arg[1]," 0 ");
+
+            }
+
+
+
+            replaceAll(tmp_initial,_const2,current->arg[1]);
+            replaceAll(tmp_setup,_const2,current->arg[1]);
+            replaceAll(tmp_loop,_const2,current->arg[1]);
+             replaceAll(tmp_extra,_const2,current->arg[1]);
+
+            // ar_setup.replace(var1,current->arg[0]);
+
+        }
+
+        buffer.erase(0);
+        if (_const3 != NULL)
+        {
+            if (current->type[2]=='v')
+               {
+                 buffer.append(getVarType(_const3_type)).append(" ").append(current->arg[2]).append(" = 0;\n");
+                if (var_initial.find(buffer) ==-1){
+
+                    var_initial.append(buffer);
+
+                }
+
+
+            }
+            if (current->arg[2] == 0){
+             current->arg[2]=(char *)malloc(2);
+             strcpy(current->arg[2]," ");
+
+            }
+
+
+            replaceAll(tmp_initial,_const3,current->arg[2]);
+            replaceAll(tmp_setup,_const3,current->arg[2]);
+            replaceAll(tmp_loop,_const3,current->arg[2]);
+            replaceAll(tmp_extra,_const3,current->arg[2]);
+            // ar_setup.replace(var1,current->arg[0]);
+
+        }
+
+        buffer.erase(0);
+
+        if (_const4 != NULL)
+        {
+            if (current->type[3]=='v')
+
+                {
+                 buffer.append(getVarType(_const1_type)).append(" ").append(current->arg[3]).append(" = 0;\n");
+                if (var_initial.find(buffer) ==-1){
+                    var_initial.append(buffer).append("\n");
+
+                }
+
+
+
+            }
+
+            if (current->arg[3] == 0){
+             current->arg[3]=(char *)malloc(2);
+             strcpy(current->arg[3]," ");
+
+            }
+
+            replaceAll(tmp_initial,_const4,current->arg[3]);
+            replaceAll(tmp_setup,_const4,current->arg[3]);
+            replaceAll(tmp_loop,_const4,current->arg[3]);
+
+             replaceAll(tmp_extra,_const4,current->arg[3]);
+            // ar_setup.replace(var1,current->arg[0]);
+
+        }
+
+        buffer.erase(0);
+        if (_const5 != NULL)
+        {
+            if (current->type[4]=='v')
+
+                {
+                 buffer.append(getVarType(_const1_type)).append(" ").append(current->arg[4]).append(" = 0;\n");
+                if (var_initial.find(buffer) ==-1){
+                    var_initial.append(buffer).append("\n");
+
+                }
+
+
+
+            }
+
+            if (current->arg[4] == 0){
+             current->arg[4]=(char *)malloc(2);
+             strcpy(current->arg[4]," ");
+
+            }
+
+            replaceAll(tmp_initial,_const5,current->arg[4]);
+            replaceAll(tmp_setup,_const5,current->arg[4]);
+            replaceAll(tmp_loop,_const5,current->arg[4]);
+
+             replaceAll(tmp_extra,_const5,current->arg[4]);
+            // ar_setup.replace(var1,current->arg[0]);
+
+        }
+
+
+buffer.erase(0);
+        if (_const6 != NULL)
+        {
+            if (current->type[5]=='v')
+
+                {
+                 buffer.append(getVarType(_const1_type)).append(" ").append(current->arg[5]).append(" = 0;\n");
+                if (var_initial.find(buffer) ==-1){
+                    var_initial.append(buffer).append("\n");
+
+                }
+
+
+
+            }
+
+            if (current->arg[5] == 0){
+             current->arg[5]=(char *)malloc(2);
+             strcpy(current->arg[5]," ");
+
+            }
+
+            replaceAll(tmp_initial,_const6,current->arg[5]);
+            replaceAll(tmp_setup,_const6,current->arg[5]);
+            replaceAll(tmp_loop,_const6,current->arg[5]);
+
+             replaceAll(tmp_extra,_const6,current->arg[5]);
+            // ar_setup.replace(var1,current->arg[0]);
+
+        }
+
+
+
+
+
+
+
+        ////////////////////
+
+
+
+
+
+
+
+
+
+
+        int cmd_state=current->isNew(head,current); // check if this command are new or not to avoid repeate sume inetial identifire with same arguments
+
+
+//cout<<"\n // cmd state =="<<cmd_state<<current->name<<endl;
+        if (cmd_state==2) // repeated Command with same arguments
+            ar_loop.append(tmp_loop); // append link just call function
+ //cout<<"__step 17______";
+        if (cmd_state==1) // repeated Command but different arguments
+        {
+              //  get mode property from root to add specific element
+                string Smode=" ";
+
+                const char *mode=getAttribute(root,"mode"); // check mode to know any type of functions
+
+if (mode==NULL){
+Smode.append("l") ;
+}else
+{
+  Smode.append(mode)  ;
+
+}
+
+
+if ( Smode.find("isl")!=-1) // this mean just ar_setup tag and ar_loop different if repeat command
+            {
+                if (ar_initial.find(tmp_initial.substr(0,tmp_initial.find_first_of(";")-1))==-1) // just compare first element // آخر خطأ
+                ar_initial.append(tmp_initial);
+
+                ar_setup.append(tmp_setup);
+                ar_loop.append(tmp_loop);
+            }
+           else if ( Smode.find("sl")!=-1) // this mean just ar_setup tag and ar_loop different if repeat command
+            {
+
+
+                ar_setup.append(tmp_setup);
+                ar_loop.append(tmp_loop);
+            }
+            else if(Smode.find("l")!=-1) // this mean just append link to name function in ar_loop
+            {
+                ar_loop.append(tmp_loop);
+            }
+
+
+        }
+ //cout<<" //__step 18______ \n";
+
+        if (cmd_state==0) // this mean new command add all associated element
+        {
+
+            // add all tmp element to full code;
+       //  if (!tmp_include.empty())
+            ar_include.append(tmp_include);
+        // if (!ar_initial.empty())
+         if (ar_initial.find(tmp_initial.substr(0,tmp_initial.find_first_of(";")-1))==-1){ //  just compare first element
+
+           // cout<<"// test::"<<tmp_initial.substr(0,tmp_initial.find_last_of("=")-1);
+            ar_initial.append(tmp_initial);
+         }
+
+
+         //   if (!ar_setup.empty())
+            ar_setup.append(tmp_setup);
+
+         //   if (!ar_loop.empty())
+            ar_loop.append(tmp_loop);
+
+        //    if (!ar_extra.empty())
+            ar_extra.append(tmp_extra);
+
+           // erase tmp element
+
+        }
+
+
+
+            tmp_include.erase(0);
+            tmp_initial.erase(0);
+            tmp_setup.erase(0);
+            tmp_loop.erase(0);
+            tmp_extra.erase(0);
+            tmp_initial.erase(0);
+
+
+        /* this part specific for replace name attributes (const1 , const2 ,....) by corresponding names
+                   for example Удкс 1
+                     name command=Удкс
+                     have one arg[0]=1
+
+                Удкс.Ш file cointain XML data associated with this command
+
+                 <constant const1="_const_01"/>  <ar_setup> pinMode(_val_01, OUTPUT); </ar_setup>
+
+               [call]   get attribute const1 from <constant> tag
+               [return] _const_01
+               [call]   get text from ar_setup
+               [return] pinMode(_val_01, OUTPUT);
+
+                  then replace value arg[0] by _const_01 in ar_setup then output
+                        pinMode(1, OUTPUT);
+        */
+
+        //cout<<"\n //_______step19___________<<\n\n ";
+
+        effective_last_node.erase(0);
+
+        if (effective != NULL)
+        effective_last_node.append(effective);
+
+        current=current->next;
+
+    }
+        //cout<<" */ ";
+
+    full_code.append(ar_include);
+    full_code.append("\n");
+    full_code.append(ar_initial).append("\n").append(var_initial).append("int tmp = 0;\n");
+    full_code.append("\n");
+    full_code.append("void setup() {\n").append("Serial.begin(9600);\n");
+    full_code.append(ar_setup);
+    full_code.append("\n}\n");
+    full_code.append("void loop() {\n");
+    full_code.append(ar_loop);
+    full_code.append("\n}\n");
+    full_code.append(ar_extra);
+    full_code.append("\n");
+
+
+    // cout <<full_code.c_str();
+    //cout<< full_code.c_str();
+}
+
+// function gets files in certain folder
+void GetFilesInDirectory(std::vector<string> &out, const string &directory)
+{
+#ifdef WINDOWS
+    HANDLE dir;
+    WIN32_FIND_DATA file_data;
+
+    if ((dir = FindFirstFile((directory + "/*").c_str(), &file_data)) == INVALID_HANDLE_VALUE)
+        return; /* No files found */
+
+    do {
+        const string file_name = file_data.cFileName;
+        const string full_file_name = directory + "/" + file_name;
+        const bool is_directory = (file_data.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) != 0;
+
+        if (file_name[0] == '.')
+            continue;
+
+        if (is_directory)
+            continue;
+
+        out.push_back(full_file_name);
+    } while (FindNextFile(dir, &file_data));
+
+    FindClose(dir);
+#else
+
+    DIR *dir;
+    // class stat st;
+    class dirent *ent;
+
+
+    dir = opendir(directory.c_str());
+
+    while ((ent = readdir(dir)) != NULL) {
+        const string file_name = ent->d_name;
+        const string full_file_name = directory + "/" + file_name;
+
+        if (file_name[0] == '.')
+            continue;
+/*
+        if (stat(full_file_name.c_str(), &st) == -1)
+            continue;
+
+        const bool is_directory = (st.st_mode & S_IFDIR) != 0;
+
+        if (is_directory)
+            continue; */
+        std::cout<<"step 2"<<endl;
+
+
+        out.push_back(full_file_name);
+       // cout <<full_file_name<<endl;
+    }
+    std::cout<<"step 2"<<endl;
+    closedir(dir);
+#endif
+} // GetFilesInDirectory
+
+
+
+
+// get project directory
+string exePath()
+{
+
+
+
+    char cCurrentPath[FILENAME_MAX];
+
+     if (!GetCurrentDir(cCurrentPath, sizeof(cCurrentPath)))
+         {
+         return 0;
+         }
+
+    cCurrentPath[sizeof(cCurrentPath) - 1] = '\0'; /* not really required */
+    return string( cCurrentPath );
+
+}
+
+
+
+/*
+
+this function take tokens and generate liked list (Nodes)
+each node contain name commands or spechial symbole
+
+there are 4 parmeters for include them with assocaited command
+
+*/
+
+char * RndNameVariable(){
+
+char var[10]={"AAAAAAAAA"};
+
+char *name= (char *)malloc(10);
+
+var[0]=var[0]+rand() % 25 +1;
+var[1]=var[1]+rand() % 25 +1;
+var[2]= var[2]+rand() % 25 +1;
+var[3]=var[3]+ rand() % 25 +1;
+var[4]=var[4]+ rand() % 25 +1;
+var[5]=var[5]+ rand() % 25 +1;
+var[6]=var[6]+ rand() % 25 +1;
+var[7]=var[7]+ rand() % 25 +1;
+var[8]=var[8]+ rand() % 25 +1;
+strcpy(name,var);
+
+return name;
+
+}
+
+ char * getVarType(const char *ch){
+
+//char *str=malloc(3);
+
+if (ch==0)
+return "int";
+
+
+if (!strcmp(ch,"vf"))
+        return "float";
+
+        if (!strcmp(ch,"vi"))
+        return "int";
+
+        if (!strcmp(ch,"vc"))
+        return "char";
+
+
+ return "int";
+
+}
+
+ vector<string> globVector(const string& pattern){
+     glob_t glob_result;
+     glob(pattern.c_str(),GLOB_TILDE,NULL,&glob_result);
+     vector<string> files;
+     for(unsigned int i=0;i<glob_result.gl_pathc;++i){
+         files.push_back(string(glob_result.gl_pathv[i]));
+         //cout<<" Files ::"<<string(glob_result.gl_pathv[i])<<endl;
+     }
+     globfree(&glob_result);
+     return files;
+ }
+
+
+
+
+
+// function for show all linked list (Nodes) just for check
+int show_all(Node *head)
+{
+
+    Node *current =head;
+
+    while(current!=NULL)
+    {
+      //  std::cout<<"// "<<current->name<<"*";
+       // if (current->arg[0])
+           // std::cout <<" arg[0] == " <<current->arg[0];
+      //  if (current->arg[1])
+       // {
+
+         //   std::cout<< " arg[1] == " <<current->arg[1];
+      //  }
+
+
+       // if (!current->keywords.empty())
+          //  std::cout<< " keywords ==[ " <<current->keywords<<"]"<<std::endl;
+
+       // std::cout<<"//______step 11"<<endl;
+
+        //  printf(" arg[0] == %s  arg[1] == %s\n",current->arg[0],current->arg[1]);
+
+        current=current->next;
+
+    }
+
+
+
+    return 0;
+
+}
+
+int getExprestion(string *ccode){
+
+size_t start_pos=0;
+
+    char operator_[6]={"+=-*/"};
+    int nextoperator=-1;
+    int _flag=0;
+    int startExpOffset;
+    int endExpOffset;
+    int seek=0;
+    int onestep=1;
+    int _max=0;
+    string buffer;
+    char *ch0=0;
+   char *ch1=0;
+
+   char *tmp=(char *)malloc(ccode->length()+1);
+strcpy(tmp,ccode->c_str());
+
+
+while(nextoperator<4) {
+        nextoperator++;
+        cout<<operator_[nextoperator]<<"?"<<endl;
+    while((start_pos = ccode->find(operator_[nextoperator], start_pos)) != std::string::npos )
+    {
+
+        cout<<"//start ::"<<start_pos<<endl;
+
+endExpOffset=start_pos;
+seek=0;
+  // chech operator in right hand side
+    while(ch0!=tmp){
+
+
+        ch0=(tmp+start_pos-seek-onestep); // right char
+        ch1=(tmp+start_pos-seek); // left char
+
+
+// cout<<"\n current char["<<ch1<< "] next char ["<<ch0<<"]"<<endl;
+
+        if ( *ch0!=' ' && !(*ch0 >32 && *ch0<48) && *ch0 !='='  &&
+            (*ch1==' ' || *ch1=='\n' || (*ch1 >32 && *ch1<48) )){ // note ch1 must be validate character not sympole
+            _flag=1;
+            cout<<"//_step1";
+             endExpOffset=start_pos-seek;
+        }
+
+        if((*ch0==' '  || *ch0=='\n' ||  ch0==tmp || (*ch0 >32 && *ch0<48) ) &&
+           (*ch1!=' '  && *ch1!='=' &&  !(*ch1 >32 && *ch1<48) ) ){
+
+            startExpOffset=start_pos-seek;
+            cout<<"//right hand side operator ["<<ccode->substr(startExpOffset,endExpOffset-startExpOffset)<<"]"<<endl;
+        if (start_pos>_max)
+            _max=start_pos+1;
+
+        break;
+
+        }
+
+
+
+        seek+=onestep;
+    }
+    //tmp=tmp+start_pos+2;
+
+
+// std::cout<<"\n old code"<<ccode->c_str()<<endl;
+ccode->replace(start_pos, 1, "o");
+
+start_pos+=1;
+ std::cout<<"\n // new code"<<endl<<ccode->c_str()<<endl;
+    }
+
+
+
+       // if (offset !=-1)
+        {
+
+        //    strb.push_back(ccode.substr(offset+1,start_pos-offset-1)); // copy string to new item in list
+          //  cout<<"text ["<<index<<"]:"<<ccode.substr(offset+1,start_pos-offset-1);
+//            ccode->replace(offset, start_pos-offset+1, "&@#!$");
+            // In case 'to' contains 'from', like replacing 'x' with 'yx'
+    //        start_pos += 5;
+
+          //  continue;
+        }
+
+//        offset=start_pos;
+
+    }
+
+    if (_flag){
+
+    start_pos=_max;
+    seek=0;
+    _flag=0;
+
+    cout<<"// start check! left side operator "<<endl;
+    while(*ch1!='\0'){
+
+
+        ch0=(tmp+start_pos+seek);
+        ch1=(tmp+start_pos+seek+1);
+
+
+        if ( *ch0!=' ' && !(*ch0 >32 && *ch0<48)  && // current char
+            (*ch1==' ' || *ch1=='\n' || *ch1=='\0' ) //  cuurent +1 char ;
+            ){ // note ch1 must be validate character not sympole
+
+            _flag=1;
+                startExpOffset=start_pos+seek;
+
+cout<<"// last operator ["<<ccode->substr(startExpOffset,endExpOffset-startExpOffset+1)<<"]"<<endl;
+break;
+        }
+
+        if(((*ch0==' '  || *ch0=='\n') || (*ch0 >32 && *ch0<48) ) && *ch1!=' ' && !(*ch1 >32 && *ch1<48)  ){
+                _flag=0;
+
+           endExpOffset=start_pos+seek+1;
+            ;
+           // strcpy(ccode.c_str(),buffer.
+
+
+
+        }
+
+        seek++;
+
+    }
+
+
+    }
+
+
+
+return 0;
+}
+
+
+
+
+int main(int argc, char * argv[])
+{
+// this path pass to executable file Bari3
+
+	//cout <<"just for test"<<endl;
+
+	if (argc<=0)
+       return 0;
+//cout<<"arg 1 ::"<<argv[1]<<endl;
+
+//cout<<"arg 2 ::"<<argv[2]<<endl;
+    /*  char *path="f:/text.txt";
+      fstream File(path,ios::out | ios::in | ios::binary);
+      int Size = File.tellg();
+      File.seekg (1, ios::end);
+      */
+    std::string full_code;
+    std::list <char *> tokens;
+    //printf ("just for test");
+    char *code;
+    int Size = strlen(argv[1]);
+    code = (char *) malloc(Size+1)  ;
+    if (!code)
+    {
+        printf("//error in allocate block memory");
+    }
+    memset(code, '\0', Size+1);
+    strcpy(code,argv[1]);
+
+
+
+
+
+    /* int ch0;
+    int cnt=0;
+    cout<< "\n Code : \n";
+    while(ch0=*(code +cnt)!='\0'){
+        cnt++;
+        ch0=*(code +cnt);
+
+        cout<<ch0<<" == <"<<(char ) *(code +cnt)<<">\n";
+
+    } */
+
+
+    // File.seekg(0, ios::beg);
+    // File.read(code,Size);
+    // File.close();
+
+
+    //  list<char *>::iterator i;
+
+
+
+    // format(&ccode);
+
+
+    code= preprocessing(code);
+
+
+    int num=getTokens(&tokens, code);
+
+    postprocessing(&tokens,exePath());
+    //  processing2(&tokens); // تحويل الأرقام والثوابت المعرفة مسبقا
+
+
+  //  printf("\n /* number token %d\n",num);
+   // std::cout<<"step 1"<<endl;
+    if(num)
+    {
+    //	std::cout<<"step 2"<<endl;
+    	try{
+
+
+        Node *head =
+        		getCommand(exePath(),&tokens,&globVector(exePath().append("/*").c_str()));
+       // std::cout<<"step 3"<<endl;
+       parse_code(head,full_code);
+        std::cout<< full_code.c_str();
+    	}
+    	catch(int e){
+    		cout<<"//Number of error >>" <<e;
+    	}
+
+      //  cout<< " */ "<<endl;
+      //  cout<<"\n /* Commands \n";
+     //   show_all(head);
+
+      // std::cout<<"step 4"<<endl;
+    }
+
+
+
+   //  std::cout<<"last step"<<endl;
+
+    return 1;
+}
+
+
+
+
+
+
+

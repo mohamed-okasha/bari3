@@ -1,0 +1,138 @@
+﻿<root>
+<constant const1="_const_01" const2="_const_02" const3="_const_03" /> 
+
+
+
+<ar_loop>
+if(_const_01 _const_02 _const_03)
+</ar_loop>
+
+</root>
+
+<subroot keywords="يساوي">
+<constant const1="_const_01" const2="_const_02" /> 
+
+
+
+<ar_loop>
+if(_const_01==_const_02)
+</ar_loop>
+
+</subroot>
+
+<subroot keywords="أكبر">
+<constant const1="_const_01" const2="_const_02" /> 
+
+
+<ar_loop>
+if(_const_01&gt;_const_02)
+</ar_loop>
+
+
+</subroot>
+
+<subroot keywords="أصغر" >
+<constant const1="_const_01" const2="_const_02" /> 
+
+
+<ar_loop>
+if(_const_01&lt;_const_02)
+</ar_loop>
+
+
+</subroot>
+
+<subroot vector="المنفذ;الرقمي">
+<constant const1="_const_01" const2="_const_02" /> 
+
+
+<ar_loop>
+if(digitalRead(_const_01)==_const_02)
+</ar_loop>
+
+
+</subroot>
+
+<subroot keywords="أصغر" vector="المنفذ;الرقمي">
+<constant const1="_const_01" const2="_const_02" /> 
+
+
+<ar_loop>
+if(digitalRead(_const_01)&lt;_const_02)
+</ar_loop>
+
+
+</subroot>
+
+
+
+<subroot keywords="أكبر" vector="المنفذ;الرقمي">
+<constant const1="_const_01" const2="_const_02" /> 
+
+
+<ar_loop>
+if(digitalRead(_const_01)&gt;_const_02)
+</ar_loop>
+
+
+</subroot>
+
+<subroot keywords="يساوي" vector="المنفذ;الرقمي">
+<constant const1="_const_01" const2="_const_02" /> 
+
+
+<ar_loop>
+if(digitalRead(_const_01)==_const_02)
+</ar_loop>
+
+
+</subroot>
+
+<subroot  vector="المنفذ;التماثلي">
+<constant const1="_const_01" const2="_const_02" /> 
+
+
+<ar_loop>
+if(analogRead(_const_01)==_const_02)
+</ar_loop>
+
+
+</subroot>
+
+<subroot keywords="أكبر" vector="المنفذ;التماثلي">
+<constant const1="_const_01" const2="_const_02" /> 
+
+
+<ar_loop>
+if(analogRead(_const_01)&gt;_const_02)
+</ar_loop>
+
+
+</subroot>
+
+<subroot keywords="يساوي" vector="المنفذ;التماثلي">
+<constant const1="_const_01" const2="_const_02" /> 
+
+
+<ar_loop>
+if(analogRead(_const_01)==_const_02)
+</ar_loop>
+
+
+</subroot>
+
+<subroot keywords="أصغر" vector="المنفذ;التماثلي">
+<constant const1="_const_01" const2="_const_02" /> 
+
+
+<ar_loop>
+if(analogRead(_const_01)&lt;_const_02)
+</ar_loop>
+
+
+</subroot>
+
+
+
+
+

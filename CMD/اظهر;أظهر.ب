@@ -1,0 +1,54 @@
+
+<root mode="l" >
+
+<constant const1="_const_01"  /> 
+
+<ar_loop>
+Serial.print(_const_01);
+</ar_loop>
+
+</root>
+
+
+<root mode="l" keywords="ÓØÑ" >
+
+<constant const1="_const_01"  /> 
+
+<ar_loop>
+Serial.println(_const_01);
+</ar_loop>
+
+</root>
+
+<subroot mode="sl" vector="ÇáãäÝÐ;ÇáÑÞãí" >
+
+<constant const1="_const_01"  _const_01="v1" /> 
+
+<ar_include> </ar_include>
+
+
+<ar_setup>
+pinMode(_const_01,INPUT);
+</ar_setup>
+
+<ar_loop>
+Serial.println(DigitalRead(_const_01));
+</ar_loop>
+
+
+</subroot>
+
+<subroot mode="sl" vector="ÇáãäÝÐ;ÇáÊãÇËáí" >
+
+<constant const1="_const_01"  _const_01="v1" /> 
+
+<ar_include> </ar_include>
+
+
+
+<ar_loop>
+Serial.println(analogRead(_const_01));
+</ar_loop>
+
+
+</subroot>

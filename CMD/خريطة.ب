@@ -1,0 +1,16 @@
+<root mode ="l">
+
+<constant const1="_const_01" const2="_const_02" _const_01='s' 
+const3="_const_03"  const4="_const_04" const5="_const_05" const6="_const_06" /> 
+
+
+
+
+<ar_loop>
+        _const_01= map(_const_02,_const_03,_const_04,_const_05,_const_06);
+</ar_loop>
+
+
+
+
+</root>
