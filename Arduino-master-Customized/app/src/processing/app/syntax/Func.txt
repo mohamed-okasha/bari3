@@ -1,0 +1,7 @@
+1552  public void overwriteSetSelectedText(String str)
+
+
+
+getCaretLine()
+
+textArea.getCaretPosition() - textArea.getLineStartOffset(line);

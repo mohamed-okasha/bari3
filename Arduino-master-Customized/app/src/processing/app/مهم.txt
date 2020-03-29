@@ -1,0 +1,11 @@
+if (current.getCode().isModified()) {
+      current.getCode().setProgram(editor.getText());
+    }
+	
+	
+	 
+	 File newFile = new File(newFolder, newName + ".ino");
+    data.getCode(0).saveAs(newFile);
+	
+	
+	 data.addCode((new SketchCodeDocument(newFile)).getCode());
